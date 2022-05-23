@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-    public class a : MonoBehaviour {
+    public class PursueTo : MonoBehaviour {
     
         public Transform ojos;
         public Transform house;

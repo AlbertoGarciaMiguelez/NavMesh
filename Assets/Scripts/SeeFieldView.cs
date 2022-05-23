@@ -1,12 +1,12 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(prueba))]
-public class prueba2 : Editor
+[CustomEditor(typeof(FieldView))]
+public class SeeFieldView : Editor
 {
     private void OnSceneGUI()
     {
-        prueba fov = (prueba)target;
+        FieldView fov = (FieldView)target;
         Handles.color = Color.white;
         Handles.DrawWireArc(fov.transform.position, Vector3.up, Vector3.forward, 360, fov.radius);
 

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class prueba : MonoBehaviour
+public class FieldView : MonoBehaviour
 {
     public float radius;
     [Range(0,360)]
@@ -12,6 +12,7 @@ public class prueba : MonoBehaviour
     public GameObject playerRef;
     public Transform house;
     public Transform player;
+    AgentState state;
     UnityEngine.AI.NavMeshAgent agent;
 
     public LayerMask targetMask;
@@ -25,6 +26,7 @@ public class prueba : MonoBehaviour
         playerRef = GameObject.FindGameObjectWithTag("Player");
         player = GameObject.FindGameObjectWithTag("Player").transform;
         house = GameObject.FindGameObjectWithTag("Respawn").transform;
+        state= AgentState.Stop;
         StartCoroutine(FOVRoutine());
     }
 
@@ -65,10 +67,39 @@ public class prueba : MonoBehaviour
         }
         else if (canSeePlayer)
             canSeePlayer = false;
-        if(canSeePlayer==true){
-            agent.destination = player.position;
+        if(canSeePlayer){
+            SetState(AgentState.Chasing);
+            Debug.Log("ver");
         }else{
-            agent.destination = house.position;
+            Debug.Log("No ver");
+            if(transform.position.x==house.position.x && transform.position.z==house.position.z){
+                SetState(AgentState.Stop);
+            }else{
+                SetState(AgentState.Returning);
+            }
         }
+    }
+    void SetState(AgentState newState){
+        if(newState != state){
+            state=newState;
+            switch(state){
+                case AgentState.Stop:
+                    Debug.Log(AgentState.Stop);
+                    break;
+                case AgentState.Chasing:
+                    agent.destination = player.position;
+                    Debug.Log(AgentState.Chasing);
+                    break;
+                case AgentState.Returning:
+                    agent.destination = house.position;
+                    Debug.Log(AgentState.Returning);
+                    break;
+            }
+        }
+    }
+    public enum AgentState{
+        Stop,
+        Chasing,
+        Returning
     }
 }
