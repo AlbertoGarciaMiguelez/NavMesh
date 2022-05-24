@@ -10,8 +10,9 @@ public class FieldView : MonoBehaviour
     public float angle;
 
     public GameObject playerRef;
-    public Transform house;
+    public Transform posicion2;
     public Transform player;
+    public Transform posicion1;
     AgentState state;
     UnityEngine.AI.NavMeshAgent agent;
 
@@ -25,14 +26,15 @@ public class FieldView : MonoBehaviour
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         playerRef = GameObject.FindGameObjectWithTag("Player");
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        house = GameObject.FindGameObjectWithTag("Respawn").transform;
-        state= AgentState.Stop;
+        posicion2 = GameObject.FindGameObjectWithTag("Punto2").transform;
+        posicion1 = GameObject.FindGameObjectWithTag("Punto1").transform;
+        state= AgentState.StopPosicion1;
         StartCoroutine(FOVRoutine());
     }
 
     private IEnumerator FOVRoutine()
     {
-        WaitForSeconds wait = new WaitForSeconds(0.2f);
+        WaitForSeconds wait = new WaitForSeconds(1f);
 
         while (true)
         {
@@ -67,15 +69,31 @@ public class FieldView : MonoBehaviour
         }
         else if (canSeePlayer)
             canSeePlayer = false;
+
         if(canSeePlayer){
             SetState(AgentState.Chasing);
             Debug.Log("ver");
         }else{
             Debug.Log("No ver");
-            if(transform.position.x==house.position.x && transform.position.z==house.position.z){
-                SetState(AgentState.Stop);
-            }else{
+            switch(state){
+                case AgentState.Chasing:
+                    SetState(AgentState.Returning);
+                    break;
+                case AgentState.StopPosicion1:
+                    SetState(AgentState.Returning);
+                    break;
+                case AgentState.StopPosicion2:
+                    SetState(AgentState.Centinela);
+                    break;
+            }
+            if(transform.position.x==posicion1.position.x && transform.position.z==posicion1.position.z){
+                SetState(AgentState.StopPosicion1);
+            }
+            else if(transform.position.x==posicion2.position.x && transform.position.z==posicion2.position.z){
+                SetState(AgentState.StopPosicion2);
+            }else if(state==AgentState.StopPosicion1 && !(transform.position.x==posicion1.position.x && transform.position.z==posicion1.position.z) && !(transform.position.x==posicion2.position.x && transform.position.z==posicion2.position.z)){
                 SetState(AgentState.Returning);
+                Debug.Log("Esto no pasa");
             }
         }
     }
@@ -83,23 +101,33 @@ public class FieldView : MonoBehaviour
         if(newState != state){
             state=newState;
             switch(state){
-                case AgentState.Stop:
-                    Debug.Log(AgentState.Stop);
+                case AgentState.StopPosicion1:
+                    Debug.Log(AgentState.StopPosicion1);
+                    break;
+                case AgentState.StopPosicion2:
+                    Debug.Log(AgentState.StopPosicion2);
                     break;
                 case AgentState.Chasing:
                     agent.destination = player.position;
                     Debug.Log(AgentState.Chasing);
                     break;
                 case AgentState.Returning:
-                    agent.destination = house.position;
+                    agent.destination = posicion2.position;
                     Debug.Log(AgentState.Returning);
                     break;
+                case AgentState.Centinela:
+                    agent.destination = posicion1.position;
+                    Debug.Log("Llegando");
+                    Debug.Log(AgentState.Centinela);
+                break;
             }
         }
     }
     public enum AgentState{
-        Stop,
+        StopPosicion1,
+        StopPosicion2,
         Chasing,
-        Returning
+        Returning,
+        Centinela
     }
 }
