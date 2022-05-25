@@ -28,18 +28,27 @@ public class FieldView : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
         posicion2 = GameObject.FindGameObjectWithTag("Punto2").transform;
         posicion1 = GameObject.FindGameObjectWithTag("Punto1").transform;
-        state= AgentState.StopPosicion1;
+        state= AgentState.Chasing;
         StartCoroutine(FOVRoutine());
+    }
+    void Update(){
+        FieldOfViewCheck();
     }
 
     private IEnumerator FOVRoutine()
     {
-        WaitForSeconds wait = new WaitForSeconds(1f);
+        WaitForSeconds wait2 = new WaitForSeconds(2.5f);
+        WaitForSeconds wait = new WaitForSeconds(0.2f);
 
         while (true)
         {
             yield return wait;
-            FieldOfViewCheck();
+            if(state==AgentState.StopPosicion1 || state==AgentState.StopPosicion2){
+                yield return wait2;
+                Acciones();
+            }else{
+                Acciones();   
+            }
         }
     }
 
@@ -69,9 +78,12 @@ public class FieldView : MonoBehaviour
         }
         else if (canSeePlayer)
             canSeePlayer = false;
-
         if(canSeePlayer){
             SetState(AgentState.Chasing);
+        }
+    }
+    private void Acciones(){
+        if(canSeePlayer){
             Debug.Log("ver");
         }else{
             Debug.Log("No ver");

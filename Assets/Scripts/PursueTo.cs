@@ -25,10 +25,8 @@ using UnityEngine.AI;
             Vector3 directionToTarget = (player.position-transform.position).normalized;
             if(Physics.Raycast(ojos.position, ojos.forward, out hit, rangoVision) && hit.collider.CompareTag("Player")){
             agent.destination = player.position;
-            Debug.Log("Hola");
             }else{
             agent.destination = house.position;
-            Debug.Log("Hola2");
         }
         void OnDrawGizmos(){
             v = player.position-transform.position;
